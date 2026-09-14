@@ -255,15 +255,27 @@ const CONFIG = {
      them, but recency is one of the things people weigh most. */
   reviews: {
     heading: 'What people actually said',
-    sub: 'Straight out of the feedback texts. The screenshots are pinned on my Instagram if you want to see them.',
-    highlightUrl: '',        // ⚠ paste the Instagram Highlight link
+    sub: 'Straight out of the messages, word for word. The screenshots are pinned on my Instagram if you want to see them.',
+    highlightUrl: 'https://www.instagram.com/stories/highlights/18076124141256769/',
     ctaLabel: 'See the screenshots',
 
-    // ⚠ PLACEHOLDERS showing the shape — replace with your real texts
+    /* Verbatim. Spelling, slang and emoji left exactly as sent — that is
+       what makes them read as real. Add name / place / pair / when as you
+       get them; anything left blank simply is not shown. */
     items: [
-      { text: 'PLACEHOLDER — paste a real feedback text here, exactly as they sent it.',
-        name: 'First name', place: 'Suburb', pair: 'What you cleaned', when: 'Month year' },
-      { text: 'PLACEHOLDER — a second one. Short ones are fine, they read as more real than long ones.',
+      { text: "hahaha yeh had them for ages and wore it to hella raves, but holy it looks hectic as now",
+        name: '', place: '', pair: '', when: '' },
+
+      { text: "They look absolutely spotless. Thank you so much",
+        name: '', place: '', pair: '', when: '' },
+
+      { text: "Wtf you're a legend was not expecting that \u{1F44C}\u{1F3FD}\u{1F44C}\u{1F3FD}\u{1F44C}\u{1F3FD}\u{1F602}\u{1F602}",
+        name: '', place: '', pair: '', when: '' },
+
+      { text: "Shot my brother kicks looks better than new , haven't seen em this white since I bought em \u{1F602}\u2764\uFE0F",
+        name: '', place: '', pair: '', when: '' },
+
+      { text: "Thank you again bro ur work never disappoints the shoes look fresh as \u2764\uFE0F",
         name: '', place: '', pair: '', when: '' }
     ]
   },

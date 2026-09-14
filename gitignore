@@ -1,0 +1,8 @@
+# macOS Finder metadata — never belongs in a repo
+.DS_Store
+**/.DS_Store
+
+# keep raw phone exports out; commit optimised WebP only
+Photos/*.PNG
+Photos/*.JPG
+Photos/*.jpeg

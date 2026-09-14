@@ -46,7 +46,7 @@ const CONFIG = {
       id: 'standard',
       name: "Rell's Standard Clean",
       price: 50,
-      for: 'A detailed full exterior clean, consisting of:',
+      for: 'Detailed Exterior Clean + Insoles (Scrub & Steam)',
       // each entry can be a plain string, or a name with its own detail line
       includes: [
         { id:'uppers', name:'Uppers (Scrub & Steam)',
@@ -69,7 +69,7 @@ const CONFIG = {
     base:  [2, 3],       // days, for up to `upTo` pairs
     upTo:  5,
     extra: [1, 2],       // added on top beyond that
-    note:  'Exact timing is confirmed at drop-off, since it moves with how busy I am.'
+    note:  'Guaranteed turnaround times will be provided once dropped off as demand fluctuates.'
   },
 
   /* ---- ADD-ONS  (a quantity, in pairs) ---------------------------------
@@ -100,10 +100,10 @@ const CONFIG = {
       name: 'Textiles surcharge',
       price: 15,
       question: 'Any pairs with materials such as suede, denim, or anything other than leather or mesh?',
-      sub:  'Materials like these need specific treatment, and more care and labour than leather or mesh.',
+      sub:  'As these materials require specific treatments, the process involves increased care and labour.',
       no:  'No — leather or mesh only',
       yes: 'Yes, some of them',
-      note: 'This does not apply to sportswear with suede.',
+      note: '',
       countLabel: 'How many of them?'
     }
   ],
@@ -111,9 +111,13 @@ const CONFIG = {
   /* ---- LOGISTICS ------------------------------------------------------- */
   logistics: {
     modes: [
-      { id:'store', name:'I\'ll come to you',    desc:'Chester Hill — address sent once booked' },
-      { id:'local', name:'Pickup and return',    desc:'I collect them and drop them back' },
-      { id:'mail',  name:'Post them to me',      desc:'Australia wide' }
+      { id:'store', name:'Dropoff to Me',
+        desc:'Located in Chester Hill, address provided once booking confirmed.' },
+      { id:'local', name:'Pickup & Dropoff Service',
+        desc:'Collected and Returned from Collection Point' },
+      // soon:true renders it greyed out and unselectable
+      { id:'mail',  name:'Interstate Postage',
+        desc:'Prepaid Shipping Label provided', soon:true }
     ],
 
     /* One fee covering the whole round trip both ways — I drive out, collect,
@@ -152,9 +156,12 @@ const CONFIG = {
   /* ---- MULTI-PAIR DISCOUNT ----------------------------------------------
      A flat amount off every pair once the job hits a tier. Tiers do not
      stack — the highest one the job qualifies for is the one that applies. */
+  /* percent comes off the cleans only — not add-ons, surcharge, travel or
+     priority. At $50 a pair that is $5 off each, same as before, but it now
+     scales by itself if you ever change the price of a clean. */
   bulk: {
     tiers: [
-      { from: 5, off: 5 }
+      { from: 5, percent: 10 }
     ]
   },
 
@@ -169,7 +176,8 @@ const CONFIG = {
        booking so a no-show doesn't leave you out of pocket for the drive.
        Nothing to pay up front when they come to you. */
     depositIsDelivery: true,
-    balanceNote: 'on collection'
+    balanceNote: 'on collection',
+    quoteNote: 'NOTE: This quote is a reference only. If a pair is inspected and found to contain fabrics or textiles requiring specific treatments, a Textile Surcharge of $15 will be added.'
   },
 
   /* ---- WHAT COMES OUT, AND WHAT DOESN'T --------------------------------

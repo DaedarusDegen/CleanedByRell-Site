@@ -284,7 +284,16 @@ function pageQuote() {
   let travel = null;   // { name, postcode, km, roadKm, fee }
   const travelFee = () => travel && !travel.tooFar ? travel.fee : 0;
 
-  $('#modeOpts').innerHTML = radio('mode', L.modes, L.modes[0].id, () => '');
+  $('#modeOpts').innerHTML = L.modes.map(o => `
+    <label class="opt${o.soon ? ' opt--soon' : ''}">
+      <input type="radio" name="mode" value="${o.id}"${o.id === L.modes[0].id ? ' checked' : ''}${o.soon ? ' disabled' : ''}>
+      <span class="tick" aria-hidden="true"></span>
+      <span class="opt-body">
+        <span class="opt-name">${esc(o.name)}</span>
+        ${o.desc ? `<span class="opt-desc">${esc(o.desc)}</span>` : ''}
+      </span>
+      ${o.soon ? '<span class="opt-price opt-soon">Coming soon</span>' : ''}
+    </label>`).join('');
 
   /* ---- distance lookup ----------------------------------------------------- */
   const labelFor = s => `${s[0]} NSW ${s[1]}`;
@@ -336,7 +345,9 @@ function pageQuote() {
 
   const bulkTiers = [...CONFIG.bulk.tiers].sort((x, y) => x.from - y.from);
   $('#bulkHint').textContent = bulkTiers.length
-    ? bulkTiers.map(t => `${t.from} pairs or more takes ${money(t.off)} off each`).join('. ') + '.'
+    ? bulkTiers.map(t => t.percent
+        ? `${t.percent}% off for ${t.from} or more pairs`
+        : `${t.from} pairs or more takes ${money(t.off)} off each`).join('. ') + '.'
     : '';
 
   const pkgById = id => CONFIG.packages.find(p => p.id === id);
@@ -491,14 +502,16 @@ function pageQuote() {
       });
     });
 
-    // highest qualifying tier wins; they don't stack, and it's per pair
+    // highest qualifying tier wins; they don't stack. a percentage comes off
+    // the cleans only — never add-ons, surcharge, travel or priority.
+    const cleans = CONFIG.packages.reduce((s, p) => s + p.price * qty[p.id], 0);
     const tier = [...CONFIG.bulk.tiers].sort((x, y) => y.from - x.from).find(t => n >= t.from);
     if (tier) {
-      lines.push({
-        k: 'bulk',
-        label: `${tier.from}+ pairs — ${money(tier.off)} off each`,
-        val: -(tier.off * n), off: true
-      });
+      const cut   = tier.percent ? cleans * tier.percent / 100 : tier.off * n;
+      const label = tier.percent
+        ? `${tier.percent}% off for ${tier.from}+ pairs`
+        : `${tier.from}+ pairs — ${money(tier.off)} off each`;
+      lines.push({ k: 'bulk', label, val: -cut, off: true });
     }
 
     let travelDays = 0;
@@ -592,8 +605,7 @@ function pageQuote() {
 
     $('#dkNote').textContent = (dep
       ? `The deposit is the travel cost, taken when you book so the drive is covered either way. It comes off your total, it isn't an extra charge. `
-      : `Nothing to pay up front when you come to me. `)
-      + `Quoted from what you've selected — if I open them up and find damage that changes the job, I tell you before I start, not after.`;
+      : '') + (CONFIG.booking.quoteNote || '');
 
     $('#total').textContent    = money(q.total);
     { const sv = $('#stickVal'); if (sv) sv.textContent = money(q.total); }

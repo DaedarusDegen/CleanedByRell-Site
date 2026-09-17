@@ -2,32 +2,38 @@
    CLEANED BY RELL — design tokens
    ============================================================ */
 :root{
-  /* This page is designed light. Without this, a phone in dark mode lets
-     Chrome's Auto Dark Theme re-colour everything and the logo's white
-     fills invert with it. "only light" is the opt-out. */
-  color-scheme: only light;
+  color-scheme: only dark;
 
-  /* Surfaces — cool off-whites, never cream. The logo is drawn with white
-     fills, so it needs a light substrate to sit on correctly. */
-  --base:#FFFFFF;      /* page */
-  --paper:#F4F6F8;     /* alternating sections */
-  --docket:#FFFFFF;    /* raised: the docket, option rows, steppers */
+  /* Surfaces — blue-tinted dark, mixed down from the brand hue rather than
+     a neutral grey, so the page still sits in the #386E98 family. */
+  --base:#0A1319;      /* page */
+  --paper:#0F1C25;     /* alternating sections */
+  --docket:#14232E;    /* raised: cards, option rows, steppers */
+
+  /* The logo carries its own white keyline, so it sits on dark unaltered —
+     no chip, no stripped fills. */
+
+  /* The stain diagram, so it follows the theme. */
+  --thread:#C9D4DC;
+  --thread-dyed:#B9A08A;
+  --thread-edge:#7C8B97;
 
   /* Text */
-  --ink:#0C1A24;       /* primary */
-  --ink-70:#3A4B57;    /* secondary */
-  --ink-45:#6B7A84;    /* captions */
+  --ink:#EAF1F5;       /* primary */
+  --ink-70:#A4B8C6;    /* secondary */
+  --ink-45:#728795;    /* captions */
 
-  /* Brand blue. On light it carries both fills and text, so --blue-lift and
-     --blue-hi collapse onto the deeper tone rather than a pale one. */
+  /* Brand blue. #386E98 only clears 3.4:1 on this background, so it carries
+     fills, buttons and borders — never small text. --blue-lift is the same
+     hue raised to 7.6:1 and does the blue text and icon work. */
   --blue:#386E98;
-  --blue-lift:#21526F; /* blue text, icons, headings */
-  --blue-hi:#21526F;   /* button hover — darkens on light */
-  --blue-deep:#21526F;
-  --blue-wash:#E8EFF5; /* selected / tinted panel */
+  --blue-lift:#7EAACC;
+  --blue-hi:#4A87B5;   /* button hover — lightens on dark */
+  --blue-deep:#7EAACC; /* alias -> --blue-lift */
+  --blue-wash:#152E40; /* selected / tinted panel */
 
-  --line:#DDE4E9;
-  --line-soft:#EBEFF2;
+  --line:rgba(255,255,255,.11);
+  --line-soft:rgba(255,255,255,.055);
 
   --shell:1080px;
   --pad:20px;
@@ -37,14 +43,15 @@
 
   --mascot:url("logo/mascot.png");
   --wordmark:url("logo/wordmark.png");
+  --wordmark-white:url("logo/wordmark-white.png");
 }
 .mark{
   background:var(--mascot) center/contain no-repeat;
-  aspect-ratio:463/447;
+  aspect-ratio:578/557;
 }
 
 *,*::before,*::after{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%;background:#FFFFFF;color-scheme:only light}
+html{-webkit-text-size-adjust:100%;background:#0A1319;color-scheme:only dark}
 body{
   margin:0;
   background:var(--base);
@@ -87,7 +94,7 @@ section{padding-block:clamp(52px,11vw,96px)}
    ============================================================ */
 .hdr{
   position:sticky;top:0;z-index:60;
-  background:rgba(255,255,255,.9);
+  background:rgba(10,19,25,.88);
   backdrop-filter:saturate(1.6) blur(12px);
   border-bottom:1px solid var(--line-soft);
 }
@@ -204,7 +211,7 @@ section{padding-block:clamp(52px,11vw,96px)}
    ============================================================ */
 .tiers{display:grid;gap:14px}
 .tier{
-  background:var(--docket);border:1px solid var(--line);border-radius:var(--r);
+  background:var(--paper);border:1px solid var(--line);border-radius:var(--r);
   padding:22px 20px 24px;position:relative;
 }
 .tier--hero{border-color:var(--blue);padding-top:40px}
@@ -282,7 +289,7 @@ section{padding-block:clamp(52px,11vw,96px)}
 .scope{background:var(--paper);border-block:1px solid var(--line)}
 .scope-intro{font-size:1.02rem;color:var(--ink-70);max-width:36em;margin:0 0 clamp(24px,5vw,34px)}
 .lvl{
-  background:var(--base);border:1px solid var(--line);border-radius:var(--r);
+  background:var(--docket);border:1px solid var(--line);border-radius:var(--r);
   padding:20px;margin-bottom:14px;
 }
 .lvl--no{background:var(--paper);border-style:dashed}
@@ -574,7 +581,7 @@ legend{
 .proof{background:var(--paper);border-block:1px solid var(--line)}
 .proof-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
 .proof-tab{
-  border:1px solid var(--line);background:var(--base);border-radius:100px;
+  border:1px solid var(--line);background:var(--docket);border-radius:100px;
   padding:8px 15px;font-size:.79rem;cursor:pointer;color:var(--ink-70);
   font-variation-settings:'wdth' 104,'wght' 700;
   transition:background .13s ease,border-color .13s ease,color .13s ease;
@@ -656,12 +663,12 @@ video.proof-img{object-fit:cover;background:var(--blue-wash)}
 .book p{color:var(--ink-70)}
 .book-mark{
   width:118px;margin-bottom:22px;aspect-ratio:753/203;
-  background:var(--wordmark) left center/contain no-repeat;
+  background:var(--wordmark-white) left center/contain no-repeat;
 }
 .chans{display:grid;gap:10px;margin-top:26px;max-width:420px}
 .chan{
   display:flex;align-items:center;gap:14px;
-  background:var(--base);border:1px solid var(--line);
+  background:var(--docket);border:1px solid var(--line);
   border-radius:var(--r);padding:14px 16px;text-decoration:none;color:var(--ink);
   transition:background .15s ease,border-color .15s ease;
 }
@@ -773,7 +780,7 @@ html{scroll-behavior:smooth}
 .revs-sec{background:var(--paper);border-block:1px solid var(--line)}
 .revs{display:grid;gap:12px}
 .rev{
-  background:var(--base);border:1px solid var(--line);
+  background:var(--docket);border:1px solid var(--line);
   border-radius:var(--r) var(--r) var(--r) 2px;   /* a nod to a message bubble */
   padding:17px 19px;margin:0;
 }

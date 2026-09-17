@@ -278,7 +278,6 @@ function pageQuote() {
     </label>`).join('');
 
   const L = CONFIG.logistics;
-  const T = L.travel;
 
   // no driving fee until we know where they are
   let travel = null;   // { name, postcode, km, roadKm, fee }
@@ -295,18 +294,12 @@ function pageQuote() {
       ${o.soon ? '<span class="opt-price opt-soon">Coming soon</span>' : ''}
     </label>`).join('');
 
-  /* ---- distance lookup ----------------------------------------------------- */
+  /* ---- zone lookup --------------------------------------------------------
+     Their suburb decides the region; the region decides the price. No
+     distance maths — these are the numbers you actually charge. */
   const labelFor = s => `${s[0]} NSW ${s[1]}`;
   const suburbIndex = new Map(SUBURBS.map(s => [labelFor(s).toLowerCase(), s]));
   $('#suburbList').innerHTML = SUBURBS.map(s => `<option value="${esc(labelFor(s))}">`).join('');
-
-  function kmBetween(a1, o1, a2, o2) {
-    const R = 6371, rad = d => d * Math.PI / 180;
-    const p1 = rad(a1), p2 = rad(a2);
-    const dp = p2 - p1, dl = rad(o2 - o1);
-    const x = Math.sin(dp / 2) ** 2 + Math.cos(p1) * Math.cos(p2) * Math.sin(dl / 2) ** 2;
-    return 2 * R * Math.asin(Math.sqrt(x));
-  }
 
   function setSuburb(raw) {
     const s = suburbIndex.get((raw || '').trim().toLowerCase());
@@ -320,17 +313,18 @@ function pageQuote() {
       if (typed) out.innerHTML =
         `<span>Can't find that one. Check the spelling — or if you're outside NSW, posting is the way to go.</span>`;
     } else {
-      const km = kmBetween(T.origin.lat, T.origin.lng, s[2], s[3]);
-      const roadKm = km * T.roadFactor;
-      const fee = Math.max(T.minimum, Math.round(T.base + T.perKm * roadKm));
-      travel = { name: s[0], postcode: s[1], km, roadKm, fee, tooFar: roadKm > T.maxKm };
+      const zi = s[2];
+      const zone = zi >= 0 ? ZONES[zi] : null;
+      travel = { name: s[0], postcode: s[1],
+                 zone: zone ? zone[0] : null,
+                 fee:  zone ? zone[1] : 0,
+                 tooFar: !zone };
       box.classList.add('addr--ok');
       out.hidden = false;
       out.innerHTML = travel.tooFar
-        ? `<span>${esc(s[0])} is about ${roadKm.toFixed(0)} km by road — further than I drive.</span><b>Post it instead</b>`
-        : `<span>${esc(s[0])} — roughly ${roadKm.toFixed(1)} km from ${esc(T.origin.name)} by road</span><b>${money(fee)} both ways</b>`;
+        ? `<span>${esc(s[0])} is outside the areas I drive to.</span><b>Drop off or post</b>`
+        : `<span>${esc(s[0])} sits in my ${esc(zone[0])} zone</span><b>${money(zone[1])} both ways</b>`;
     }
-
     render();
   }
 
@@ -518,8 +512,8 @@ function pageQuote() {
     if (mode === 'local') {
       const fee = travelFee();
       if (fee) {
-        lines.push({ k: 'local', label: `Pickup and return — ${travel.name}`, val: fee });
-        travelDays = L.travel.days;
+        lines.push({ k: 'local', label: `Pickup & return — ${travel.zone}`, val: fee });
+        travelDays = L.travelDays;
       }
     } else if (mode === 'mail') {
       lines.push({ k: 'mail', label: `${post.name} — sending and return`, val: post.price });
@@ -574,7 +568,7 @@ function pageQuote() {
       warn.textContent = `Only ${cap} pairs can go in one parcel. Drop it to ${cap} or fewer, or message me and we'll split it across two.`;
     } else if (mode === 'local' && travel && travel.tooFar) {
       warn.hidden = false;
-      warn.textContent = `${travel.name} is about ${travel.roadKm.toFixed(0)} km by road, past the ${CONFIG.logistics.travel.maxKm} km I drive to. Posting them is the way to go — it covers sending and return.`;
+      warn.textContent = `${travel.name} is outside the areas I drive to. Dropping them off or posting them is the way to go.`;
     } else if (needsSuburb) {
       warn.hidden = false;
       warn.textContent = `Pop your suburb in above and I'll work out the driving fee.`;

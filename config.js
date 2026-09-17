@@ -120,19 +120,11 @@ const CONFIG = {
         desc:'Prepaid Shipping Label provided', soon:true }
     ],
 
-    /* One fee covering the whole round trip both ways — I drive out, collect,
-       then drive out again to return them. Fee = max(minimum, base + perKm ×
-       road km), so the minimum sets the price for the local suburbs.
-       ⚠ PLACEHOLDER RATES. $30 lands on Fairfield and Canley Vale. */
-    travel: {
-      origin: { name:'Chester Hill', lat:-33.88004, lng:150.99733 },
-      roadFactor: 1.3,
-      base: 8,
-      perKm: 3.80,
-      minimum: 30,
-      maxKm: 35,      // road km; past this, point them at postage instead
-      days: 1         // added to the turnaround estimate
-    },
+    /* Pickup & return is priced by region, not by distance — these come
+       from a year of real jobs, so they account for traffic and parking,
+       not just kilometres. The zone list and the suburb-to-zone mapping
+       both live in suburbs.js. One fee covers collection AND return. */
+    travelDays: 1,        // added to the turnaround estimate
 
     // AusPost prices already cover sending AND return
     mail: {

@@ -12,6 +12,58 @@ const T_ = CONFIG.turnaround;
 const dayRange = (lo, hi) => lo === hi ? `${lo} day${lo > 1 ? 's' : ''}` : `${lo}–${hi} days`;
 const baseEta  = () => dayRange(T_.base[0], T_.base[1]);
 
+/* ---------------------------------------------------------------------------
+   Motion. Two things only: the hero settles once on load, and blocks below
+   the fold rise a little as they arrive.
+
+   The hidden state is added BY JAVASCRIPT, never in the base stylesheet —
+   if the script fails, everything is simply visible rather than invisible
+   forever. Each element fires once and is then unobserved, so scrolling
+   back up never replays anything. The quote form is excluded entirely:
+   controls that fade in while you are trying to use them are maddening.
+   --------------------------------------------------------------------------- */
+function motion() {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  // the hero is already on screen, so it plays immediately rather than waiting
+  const heroBits = ['.hero-mascot', '.hero-meta', '.hero h1', '.hero-sub', '.hero-actions']
+    .map(s => $(s)).filter(Boolean);
+  heroBits.forEach((el, i) => {
+    el.classList.add('rv');
+    el.style.setProperty('--d', `${i * 70}ms`);
+  });
+  requestAnimationFrame(() => requestAnimationFrame(() =>
+    heroBits.forEach(el => el.classList.add('rv-in'))));
+
+  const SEL = ['.sec-head', '.fact', '.tier', '.creed-in', '.proof-frame', '.proof-cap',
+               '.rev', '.lvl', '.note', '.scope-out', '.flow li', '.chan', '.hours',
+               '.areas', '.nudge', '.page-head'].join(',');
+
+  const els = [...document.querySelectorAll(SEL)]
+    .filter(el => !el.closest('#docket') && !el.closest('.hero'));
+  if (!els.length) return;
+
+  // siblings in the same group come in just behind each other, capped so a
+  // long list never leaves the last item lagging
+  const seen = new Map();
+  els.forEach(el => {
+    const k = el.parentElement;
+    const i = Math.min(seen.get(k) || 0, 4);
+    seen.set(k, (seen.get(k) || 0) + 1);
+    el.style.setProperty('--d', `${i * 55}ms`);
+    el.classList.add('rv');
+  });
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      e.target.classList.add('rv-in');
+      io.unobserve(e.target);          // once only
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+  els.forEach(el => io.observe(el));
+}
+
 /* runs on every page */
 function chrome() {
   const y = $('#yr'); if (y) y.textContent = new Date().getFullYear();
@@ -40,7 +92,10 @@ function pageHome() {
   $('#heroSub').textContent      = CONFIG.hero.sub;
   document.title = `Cleaned By Rell — Sneaker cleaning in ${CONFIG.hero.location}`;
 
-  $('#areaList').innerHTML = CONFIG.serviceAreas.map(a => `<b>${esc(a)}</b>`).join('');
+  // every region you actually drive to, straight from the price list
+  $('#areaList').innerHTML = CONFIG.logistics.zones
+    .map(z => z[0]).sort((x, y) => x.localeCompare(y))
+    .map(n => `<b>${esc(n)}</b>`).join('');
 
   $('#facts').innerHTML = CONFIG.facts.map(f => `
     <div class="fact">
@@ -314,7 +369,7 @@ function pageQuote() {
         `<span>Can't find that one. Check the spelling — or if you're outside NSW, posting is the way to go.</span>`;
     } else {
       const zi = s[2];
-      const zone = zi >= 0 ? ZONES[zi] : null;
+      const zone = zi >= 0 ? L.zones[zi] : null;
       travel = { name: s[0], postcode: s[1],
                  zone: zone ? zone[0] : null,
                  fee:  zone ? zone[1] : 0,
@@ -698,31 +753,31 @@ function pageStains() {
   const FIG = {
     surface: `<svg viewBox="0 0 300 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Threads seen end-on, still white, with dirt resting on top of them.">
     <defs><clipPath id="clipSurface"><rect x="4" y="4" width="292" height="142" rx="5"/></clipPath></defs>
-    <rect x="4" y="4" width="292" height="142" rx="5" fill="#FFFFFF" stroke="#DDE4E9"/>
+    <rect x="4" y="4" width="292" height="142" rx="5" fill="var(--docket)" stroke="var(--line)"/>
     <g clip-path="url(#clipSurface)">
-      <circle cx="22" cy="46" r="17" fill="#F2F5F7" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="60" cy="46" r="17" fill="#F2F5F7" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="98" cy="46" r="17" fill="#F2F5F7" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="136" cy="46" r="17" fill="#F2F5F7" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="174" cy="46" r="17" fill="#F2F5F7" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="212" cy="46" r="17" fill="#F2F5F7" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="250" cy="46" r="17" fill="#F2F5F7" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="288" cy="46" r="17" fill="#F2F5F7" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="41" cy="80" r="17" fill="#F2F5F7" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="79" cy="80" r="17" fill="#F2F5F7" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="117" cy="80" r="17" fill="#F2F5F7" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="155" cy="80" r="17" fill="#F2F5F7" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="193" cy="80" r="17" fill="#F2F5F7" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="231" cy="80" r="17" fill="#F2F5F7" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="269" cy="80" r="17" fill="#F2F5F7" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="22" cy="114" r="17" fill="#F2F5F7" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="60" cy="114" r="17" fill="#F2F5F7" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="98" cy="114" r="17" fill="#F2F5F7" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="136" cy="114" r="17" fill="#F2F5F7" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="174" cy="114" r="17" fill="#F2F5F7" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="212" cy="114" r="17" fill="#F2F5F7" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="250" cy="114" r="17" fill="#F2F5F7" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="288" cy="114" r="17" fill="#F2F5F7" stroke="#C8D0D7" stroke-width="1.5"/>
+      <circle cx="22" cy="46" r="17" fill="var(--thread)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="60" cy="46" r="17" fill="var(--thread)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="98" cy="46" r="17" fill="var(--thread)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="136" cy="46" r="17" fill="var(--thread)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="174" cy="46" r="17" fill="var(--thread)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="212" cy="46" r="17" fill="var(--thread)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="250" cy="46" r="17" fill="var(--thread)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="288" cy="46" r="17" fill="var(--thread)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="41" cy="80" r="17" fill="var(--thread)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="79" cy="80" r="17" fill="var(--thread)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="117" cy="80" r="17" fill="var(--thread)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="155" cy="80" r="17" fill="var(--thread)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="193" cy="80" r="17" fill="var(--thread)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="231" cy="80" r="17" fill="var(--thread)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="269" cy="80" r="17" fill="var(--thread)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="22" cy="114" r="17" fill="var(--thread)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="60" cy="114" r="17" fill="var(--thread)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="98" cy="114" r="17" fill="var(--thread)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="136" cy="114" r="17" fill="var(--thread)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="174" cy="114" r="17" fill="var(--thread)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="212" cy="114" r="17" fill="var(--thread)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="250" cy="114" r="17" fill="var(--thread)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="288" cy="114" r="17" fill="var(--thread)" stroke="var(--thread-edge)" stroke-width="1.5"/>
       <ellipse cx="44" cy="30" rx="9" ry="5.58" fill="#8A7461" opacity=".88"/>
       <ellipse cx="90" cy="26" rx="7" ry="4.34" fill="#8A7461" opacity=".88"/>
       <ellipse cx="133" cy="32" rx="10" ry="6.2" fill="#8A7461" opacity=".88"/>
@@ -738,31 +793,31 @@ function pageStains() {
   </svg>`,
     material: `<svg viewBox="0 0 300 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The same threads, now coloured all the way through.">
     <defs><clipPath id="clipMaterial"><rect x="4" y="4" width="292" height="142" rx="5"/></clipPath></defs>
-    <rect x="4" y="4" width="292" height="142" rx="5" fill="#FFFFFF" stroke="#DDE4E9"/>
+    <rect x="4" y="4" width="292" height="142" rx="5" fill="var(--docket)" stroke="var(--line)"/>
     <g clip-path="url(#clipMaterial)">
-      <circle cx="22" cy="46" r="17" fill="#B9A08A" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="60" cy="46" r="17" fill="#B9A08A" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="98" cy="46" r="17" fill="#B9A08A" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="136" cy="46" r="17" fill="#B9A08A" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="174" cy="46" r="17" fill="#B9A08A" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="212" cy="46" r="17" fill="#B9A08A" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="250" cy="46" r="17" fill="#B9A08A" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="288" cy="46" r="17" fill="#B9A08A" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="41" cy="80" r="17" fill="#B9A08A" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="79" cy="80" r="17" fill="#B9A08A" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="117" cy="80" r="17" fill="#B9A08A" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="155" cy="80" r="17" fill="#B9A08A" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="193" cy="80" r="17" fill="#B9A08A" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="231" cy="80" r="17" fill="#B9A08A" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="269" cy="80" r="17" fill="#B9A08A" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="22" cy="114" r="17" fill="#B9A08A" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="60" cy="114" r="17" fill="#B9A08A" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="98" cy="114" r="17" fill="#B9A08A" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="136" cy="114" r="17" fill="#B9A08A" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="174" cy="114" r="17" fill="#B9A08A" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="212" cy="114" r="17" fill="#B9A08A" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="250" cy="114" r="17" fill="#B9A08A" stroke="#C8D0D7" stroke-width="1.5"/>
-      <circle cx="288" cy="114" r="17" fill="#B9A08A" stroke="#C8D0D7" stroke-width="1.5"/>
+      <circle cx="22" cy="46" r="17" fill="var(--thread-dyed)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="60" cy="46" r="17" fill="var(--thread-dyed)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="98" cy="46" r="17" fill="var(--thread-dyed)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="136" cy="46" r="17" fill="var(--thread-dyed)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="174" cy="46" r="17" fill="var(--thread-dyed)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="212" cy="46" r="17" fill="var(--thread-dyed)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="250" cy="46" r="17" fill="var(--thread-dyed)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="288" cy="46" r="17" fill="var(--thread-dyed)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="41" cy="80" r="17" fill="var(--thread-dyed)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="79" cy="80" r="17" fill="var(--thread-dyed)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="117" cy="80" r="17" fill="var(--thread-dyed)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="155" cy="80" r="17" fill="var(--thread-dyed)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="193" cy="80" r="17" fill="var(--thread-dyed)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="231" cy="80" r="17" fill="var(--thread-dyed)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="269" cy="80" r="17" fill="var(--thread-dyed)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="22" cy="114" r="17" fill="var(--thread-dyed)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="60" cy="114" r="17" fill="var(--thread-dyed)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="98" cy="114" r="17" fill="var(--thread-dyed)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="136" cy="114" r="17" fill="var(--thread-dyed)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="174" cy="114" r="17" fill="var(--thread-dyed)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="212" cy="114" r="17" fill="var(--thread-dyed)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="250" cy="114" r="17" fill="var(--thread-dyed)" stroke="var(--thread-edge)" stroke-width="1.5"/>
+      <circle cx="288" cy="114" r="17" fill="var(--thread-dyed)" stroke="var(--thread-edge)" stroke-width="1.5"/>
     </g>
   </svg>`
   };
@@ -810,3 +865,4 @@ function pageQuestions() {
 chrome();
 ({ home: pageHome, quote: pageQuote, stains: pageStains, questions: pageQuestions }
   [document.body.dataset.page] || (() => {}))();
+motion();

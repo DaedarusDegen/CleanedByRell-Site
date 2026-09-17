@@ -684,7 +684,11 @@ video.proof-img{object-fit:cover;background:var(--blue-wash)}
 .hour b{font-variation-settings:'wdth' 100,'wght' 700;color:var(--ink)}
 
 .areas{margin-top:26px;padding-top:22px;border-top:1px solid var(--line)}
-.area-list{display:flex;flex-wrap:wrap;gap:6px 8px;margin-top:11px}
+.areas-lead{
+  margin:10px 0 0;font-size:.82rem;color:var(--ink-45);line-height:1.5;max-width:34em;
+}
+.areas-lead a{color:var(--blue-lift);text-decoration:underline}
+.area-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:13px}
 .area-list b{
   font-variation-settings:'wdth' 100,'wght' 700;font-size:.78rem;
   color:var(--blue-deep);background:var(--blue-wash);padding:4px 10px;border-radius:100px;
@@ -844,4 +848,28 @@ html{scroll-behavior:smooth}
   .proof-tabs{justify-content:center}
   .ftr-nav{justify-content:center}
   .ftr-meta{text-align:center}
+}
+
+
+/* ============================================================
+   Reveal on arrival
+   ------------------------------------------------------------
+   10px and 480ms. Far enough to register, short enough that
+   nothing is ever waiting on the page to catch up — long slow
+   drifts are what make a site feel cheap rather than considered.
+   The .rv class is added by JS, so no-JS renders everything
+   visible instead of blank.
+   ============================================================ */
+.rv{
+  opacity:0;
+  transform:translate3d(0,10px,0);
+}
+.rv-in{
+  opacity:1;
+  transform:none;
+  transition:opacity .48s cubic-bezier(.22,.61,.36,1) var(--d,0ms),
+             transform .48s cubic-bezier(.22,.61,.36,1) var(--d,0ms);
+}
+@media (prefers-reduced-motion:reduce){
+  .rv,.rv-in{opacity:1;transform:none;transition:none}
 }

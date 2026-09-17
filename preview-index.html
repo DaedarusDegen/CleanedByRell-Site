@@ -778,7 +778,11 @@ video.proof-img{object-fit:cover;background:var(--blue-wash)}
 .hour b{font-variation-settings:'wdth' 100,'wght' 700;color:var(--ink)}
 
 .areas{margin-top:26px;padding-top:22px;border-top:1px solid var(--line)}
-.area-list{display:flex;flex-wrap:wrap;gap:6px 8px;margin-top:11px}
+.areas-lead{
+  margin:10px 0 0;font-size:.82rem;color:var(--ink-45);line-height:1.5;max-width:34em;
+}
+.areas-lead a{color:var(--blue-lift);text-decoration:underline}
+.area-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:13px}
 .area-list b{
   font-variation-settings:'wdth' 100,'wght' 700;font-size:.78rem;
   color:var(--blue-deep);background:var(--blue-wash);padding:4px 10px;border-radius:100px;
@@ -940,6 +944,30 @@ html{scroll-behavior:smooth}
   .ftr-meta{text-align:center}
 }
 
+
+/* ============================================================
+   Reveal on arrival
+   ------------------------------------------------------------
+   10px and 480ms. Far enough to register, short enough that
+   nothing is ever waiting on the page to catch up — long slow
+   drifts are what make a site feel cheap rather than considered.
+   The .rv class is added by JS, so no-JS renders everything
+   visible instead of blank.
+   ============================================================ */
+.rv{
+  opacity:0;
+  transform:translate3d(0,10px,0);
+}
+.rv-in{
+  opacity:1;
+  transform:none;
+  transition:opacity .48s cubic-bezier(.22,.61,.36,1) var(--d,0ms),
+             transform .48s cubic-bezier(.22,.61,.36,1) var(--d,0ms);
+}
+@media (prefers-reduced-motion:reduce){
+  .rv,.rv-in{opacity:1;transform:none;transition:none}
+}
+
 </style>
 </head>
 <body data-page="home">
@@ -1048,19 +1076,19 @@ html{scroll-behavior:smooth}
     <ol class="flow">
       <li>
         <h3>Build your quote</h3>
-        <p>Create a Quote to accurately calculate the total cost for your service.</p>
+        <p>Create a quote to accurately calculate the total cost for your service.</p>
       </li>
       <li>
         <h3>Book your slot</h3>
-        <p>After you've created your quote, you can book a time that works for you. Drop them off, or I'll come pick them up. Whatever you've chosen.</p>
+        <p>Once you've created your quote, book a time that works for you. Drop them off, or I'll come pick them up — whichever you chose.</p>
       </li>
       <li>
-        <h3>The Cleaning</h3>
-        <p>Unlaced, Insole Removed, brushed by hand, treated and dried properly. Finally laced back up with consideration towards presentation.</p>
+        <h3>The cleaning</h3>
+        <p>Unlaced, insole removed, brushed by hand, treated and dried properly. Then laced back up with consideration towards presentation.</p>
       </li>
       <li>
         <h3>Back in your hands</h3>
-        <p>You receive an SMS once your pairs are ready! Payment will then be taken!</p>
+        <p>You get an SMS once your pairs are ready. Payment is taken then.</p>
       </li>
     </ol>
   </section>
@@ -1089,11 +1117,11 @@ html{scroll-behavior:smooth}
           </a>
           <a class="chan" id="smsLink" href="#">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 2H4a2 2 0 0 0-2 2v18l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2Z"/></svg>
-            <div><b>Text me your quote</b><span>Add your number in the config</span></div>
+            <div><b>Text me your quote</b><span>0424 054 581</span></div>
           </a>
           <a class="chan" id="mailLink" href="#">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 4-8 5-8-5V6l8 5 8-5v2Z"/></svg>
-            <div><b>Email</b><span>Add your address in the config</span></div>
+            <div><b>Email</b><span>hello@cleanedbyrell.com</span></div>
           </a>
         </div>
       </div>
@@ -1101,6 +1129,8 @@ html{scroll-behavior:smooth}
         <div class="hours" id="hours"></div>
         <div class="areas">
           <div class="hero-meta-k">Areas I cover</div>
+          <p class="areas-lead">Pickup and return across these regions. Not sure which one you are in?
+            <a href="preview-quote.html">Type your suburb</a> and it will tell you, with the price.</p>
           <div class="area-list" id="areaList"></div>
         </div>
       </div>
@@ -1159,8 +1189,6 @@ const CONFIG = {
       title: 'Organic views on TikTok and Instagram',
       desc:  "Plenty of good cleaners in Sydney. I'm just glad this many people watch mine." }
   ],
-
-  serviceAreas: ['Fairfield','Cabramatta','Chester Hill','Bankstown','Liverpool','Pickup & return'],
 
   /* ---- THE CLEAN -------------------------------------------------------- */
   packagesIntro: {
@@ -1245,6 +1273,49 @@ const CONFIG = {
       // soon:true renders it greyed out and unselectable
       { id:'mail',  name:'Interstate Postage',
         desc:'Prepaid Shipping Label provided', soon:true }
+    ],
+
+    /* The regions you drive to, and what each costs. One fee covers
+       collection AND return. Editing a price here changes it everywhere —
+       the quote, the deposit, and the list at the foot of the home page.
+       Which suburb sits in which zone is in suburbs.js. */
+    zones: [
+      ['Fairfield / Cabramatta', 35],
+      ['Blacktown', 40],
+      ['Burwood / Strathfield', 40],
+      ['Canterbury-Bankstown', 40],
+      ['Cumberland', 40],
+      ['Georges River', 40],
+      ['Parramatta', 40],
+      ['Canada Bay', 45],
+      ['Liverpool', 45],
+      ['Campbelltown', 50],
+      ['Inner West', 50],
+      ['Penrith', 60],
+      ['Oran Park', 70],
+      ['Hunters Hill', 70],
+      ['Ryde', 70],
+      ['Rockdale', 70],
+      ['The Hills Shire', 70],
+      ['Lane Cove', 70],
+      ['Sydney CBD', 70],
+      ['Botany Bay', 90],
+      ['Willoughby', 90],
+      ['North Sydney', 90],
+      ['Hornsby', 90],
+      ['Ku-ring-gai', 90],
+      ['Mosman', 90],
+      ['Woollahra', 90],
+      ['Randwick', 90],
+      ['Sutherland Shire', 90],
+      ['Waverley', 90],
+      ['Camden', 70],
+      ['Northern Beaches', 90],
+      ['Hawkesbury', 90],
+      ['Wollongong', 90],
+      ['Wollondilly', 90],
+      ['Blue Mountains', 90],
+      ['Central Coast', 90]
     ],
 
     /* Pickup & return is priced by region, not by distance — these come
@@ -1493,6 +1564,58 @@ const T_ = CONFIG.turnaround;
 const dayRange = (lo, hi) => lo === hi ? `${lo} day${lo > 1 ? 's' : ''}` : `${lo}–${hi} days`;
 const baseEta  = () => dayRange(T_.base[0], T_.base[1]);
 
+/* ---------------------------------------------------------------------------
+   Motion. Two things only: the hero settles once on load, and blocks below
+   the fold rise a little as they arrive.
+
+   The hidden state is added BY JAVASCRIPT, never in the base stylesheet —
+   if the script fails, everything is simply visible rather than invisible
+   forever. Each element fires once and is then unobserved, so scrolling
+   back up never replays anything. The quote form is excluded entirely:
+   controls that fade in while you are trying to use them are maddening.
+   --------------------------------------------------------------------------- */
+function motion() {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  // the hero is already on screen, so it plays immediately rather than waiting
+  const heroBits = ['.hero-mascot', '.hero-meta', '.hero h1', '.hero-sub', '.hero-actions']
+    .map(s => $(s)).filter(Boolean);
+  heroBits.forEach((el, i) => {
+    el.classList.add('rv');
+    el.style.setProperty('--d', `${i * 70}ms`);
+  });
+  requestAnimationFrame(() => requestAnimationFrame(() =>
+    heroBits.forEach(el => el.classList.add('rv-in'))));
+
+  const SEL = ['.sec-head', '.fact', '.tier', '.creed-in', '.proof-frame', '.proof-cap',
+               '.rev', '.lvl', '.note', '.scope-out', '.flow li', '.chan', '.hours',
+               '.areas', '.nudge', '.page-head'].join(',');
+
+  const els = [...document.querySelectorAll(SEL)]
+    .filter(el => !el.closest('#docket') && !el.closest('.hero'));
+  if (!els.length) return;
+
+  // siblings in the same group come in just behind each other, capped so a
+  // long list never leaves the last item lagging
+  const seen = new Map();
+  els.forEach(el => {
+    const k = el.parentElement;
+    const i = Math.min(seen.get(k) || 0, 4);
+    seen.set(k, (seen.get(k) || 0) + 1);
+    el.style.setProperty('--d', `${i * 55}ms`);
+    el.classList.add('rv');
+  });
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      e.target.classList.add('rv-in');
+      io.unobserve(e.target);          // once only
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+  els.forEach(el => io.observe(el));
+}
+
 /* runs on every page */
 function chrome() {
   const y = $('#yr'); if (y) y.textContent = new Date().getFullYear();
@@ -1506,6 +1629,14 @@ function chrome() {
     a.href = `mailto:${c.email}`;
     if (a.dataset.mail === 'label') a.textContent = c.email;
   });
+  // the contact tiles live on the home page but were only ever populated by
+  // the quote page's render(), so they showed placeholder text. Fill them here.
+  const sms = $('#smsLink'), mail = $('#mailLink');
+  if (sms)  { sms.href  = `sms:${c.phone.replace(/\s/g, '')}`;
+              sms.querySelector('span').textContent = c.phone; }
+  if (mail) { mail.href = `mailto:${c.email}`;
+              mail.querySelector('span').textContent = c.email; }
+
   // mark the current page in the nav
   const page = document.body.dataset.page;
   document.querySelectorAll('.nav a').forEach(a =>
@@ -1521,7 +1652,10 @@ function pageHome() {
   $('#heroSub').textContent      = CONFIG.hero.sub;
   document.title = `Cleaned By Rell — Sneaker cleaning in ${CONFIG.hero.location}`;
 
-  $('#areaList').innerHTML = CONFIG.serviceAreas.map(a => `<b>${esc(a)}</b>`).join('');
+  // every region you actually drive to, straight from the price list
+  $('#areaList').innerHTML = CONFIG.logistics.zones
+    .map(z => z[0]).sort((x, y) => x.localeCompare(y))
+    .map(n => `<b>${esc(n)}</b>`).join('');
 
   $('#facts').innerHTML = CONFIG.facts.map(f => `
     <div class="fact">
@@ -1795,7 +1929,7 @@ function pageQuote() {
         `<span>Can't find that one. Check the spelling — or if you're outside NSW, posting is the way to go.</span>`;
     } else {
       const zi = s[2];
-      const zone = zi >= 0 ? ZONES[zi] : null;
+      const zone = zi >= 0 ? L.zones[zi] : null;
       travel = { name: s[0], postcode: s[1],
                  zone: zone ? zone[0] : null,
                  fee:  zone ? zone[1] : 0,
@@ -2291,6 +2425,7 @@ function pageQuestions() {
 chrome();
 ({ home: pageHome, quote: pageQuote, stains: pageStains, questions: pageQuestions }
   [document.body.dataset.page] || (() => {}))();
+motion();
 
 </script>
 </body>

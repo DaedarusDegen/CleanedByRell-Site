@@ -77,6 +77,14 @@ function chrome() {
     a.href = `mailto:${c.email}`;
     if (a.dataset.mail === 'label') a.textContent = c.email;
   });
+  // the contact tiles live on the home page but were only ever populated by
+  // the quote page's render(), so they showed placeholder text. Fill them here.
+  const sms = $('#smsLink'), mail = $('#mailLink');
+  if (sms)  { sms.href  = `sms:${c.phone.replace(/\s/g, '')}`;
+              sms.querySelector('span').textContent = c.phone; }
+  if (mail) { mail.href = `mailto:${c.email}`;
+              mail.querySelector('span').textContent = c.email; }
+
   // mark the current page in the nav
   const page = document.body.dataset.page;
   document.querySelectorAll('.nav a').forEach(a =>

@@ -807,3 +807,41 @@ html{scroll-behavior:smooth}
   font-size:.66rem;text-transform:uppercase;letter-spacing:.07em;
   color:var(--ink-45);font-variation-settings:'wdth' 100,'wght' 800;
 }
+
+
+/* ============================================================
+   Mobile: one centred axis for the title layer
+   ------------------------------------------------------------
+   The hero was centred and everything under it was left-aligned,
+   so the page changed axis halfway down. Headings and their short
+   intros now centre on a phone to match.
+
+   Deliberately NOT centred: body paragraphs, lists, card internals
+   and the whole quote form. Centred prose gives every line a ragged
+   left edge, so the eye has to hunt for where the next one starts —
+   and a centred form is materially harder to fill in. Those keep
+   their left edge, which is the same 20px the headings sit on.
+   ============================================================ */
+@media (max-width:719px){
+  .sec-head h2,
+  .sec-head p,
+  .page-head h1,
+  .page-head p,
+  .scope-intro,
+  .nudge h2,
+  .nudge p{
+    text-align:center;
+    margin-inline:auto;
+  }
+  .sec-head p,
+  .page-head p,
+  .scope-intro{max-width:30em}
+
+  /* the follow-on button centres with the block it belongs to */
+  .nudge .btn{display:flex;margin-inline:auto}
+
+  /* pill row reads better centred under a centred heading */
+  .proof-tabs{justify-content:center}
+  .ftr-nav{justify-content:center}
+  .ftr-meta{text-align:center}
+}

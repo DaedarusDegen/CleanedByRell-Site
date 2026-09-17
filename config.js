@@ -317,22 +317,29 @@ const CONFIG = {
 
   /* ---- FAQ  (swap these for your real ones) ---------------------------- */
   faq: [
-    { q:'How long does a clean take?',
-      a:'Usually 2–3 days. Priority service guarantees them back within 12–24 hours.' },
-    { q:'Do you clean every brand?',
-      a:'Yes. ASICS, Nike, New Balance, adidas and designer pairs are all fine. If it\'s something rare or fragile, message me first and I\'ll tell you honestly whether I\'d touch it.' },
-    { q:'What if the stain doesn\'t come out?',
-      a:'Some damage is permanent — deep dye transfer, burns, cracked leather. I\'ll tell you what I think is achievable before I start rather than after.' },
+    { q:'How long does it take?',
+      a:'Typically 2–3 days for one to five pairs, and 3–5 days for five to ten. Priority service is subject to availability. Drying time moves with the weather — rain or colder temperatures slow it down, and I would rather keep a pair an extra day than hand it back damp. I always aim to get them back to you as quickly as I can.' },
+
+    { q:'What type of sneakers do you clean?',
+      a:'All types. Every clean covers every kind of sneaker — mesh, leather, canvas, suede and designer pairs alike.' },
+
+    { q:'Can you remove all types of stains?',
+      a:'Most of them. As you will have seen in my videos, the majority come out or at least lighten significantly. Every stain is different though, so I will not know for certain until I try. If something is not going to shift, I will tell you before I start rather than after.' },
+
+    { q:'Do you offer any guarantee?',
+      a:'Yes. I stand behind the quality of my work. If you are not satisfied with the result, tell me — refunds are considered on a case-by-case basis.' },
+
     { q:'Where do I drop them off?',
       a:'Chester Hill. I send the exact address once your booking is confirmed.' },
+
     { q:'Why is there only one package?',
       a:'Because it simplifies the whole thing. One detailed package covering the full exterior and the insoles means you are not weighing up tiers or guessing which one your pair needs — and nobody ends up paying for a clean that skipped the part they cared about.' },
+
     { q:'Do you do discounts?',
-      a:'The prices on this page are the prices. There is one clean and one price, so there is nothing to haggle over and nobody gets a better deal than you by asking. If a job turns out easier than quoted, I charge you less without being asked.' },
+      a:'The prices on this page are the prices. There is one clean and one price, so there is nothing to haggle over and nobody gets a better deal than you by asking. Five pairs or more takes 10% off. If a job turns out easier than quoted, I charge you less without being asked.' },
+
     { q:'How do I pay?',
-      a:'A deposit locks in your slot and comes off the total. The rest is due when you collect. Cash or transfer, whichever suits.' },
-    { q:'REPLACE ME — add your real questions',
-      a:'Send Claude your full FAQ list and these get swapped out.' }
+      a:'A deposit covers the travel and locks in your slot. The rest is due when you collect. Cash or transfer, whichever suits.' }
   ],
 
   /* ---- HOURS ----------------------------------------------------------- */

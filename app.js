@@ -96,7 +96,9 @@ function pageHome() {
   $('#heroLocLabel').textContent = CONFIG.hero.locationLabel;
   $('#heroLoc').textContent      = CONFIG.hero.location;
   $('#heroExp').textContent      = CONFIG.hero.experience;
-  $('#heroHead').innerHTML       = `${esc(CONFIG.hero.headline)}<em>${esc(CONFIG.hero.accent)}</em>`;
+  $('#heroHead').innerHTML =
+    esc(CONFIG.hero.headline || '') +
+    (CONFIG.hero.accent ? `<em>${esc(CONFIG.hero.accent)}</em>` : '');
   $('#heroSub').textContent      = CONFIG.hero.sub;
   document.title = `Cleaned By Rell — Sneaker cleaning in ${CONFIG.hero.location}`;
 
@@ -357,41 +359,150 @@ function pageQuote() {
       ${o.soon ? '<span class="opt-price opt-soon">Coming soon</span>' : ''}
     </label>`).join('');
 
-  /* ---- zone lookup --------------------------------------------------------
+  /* ---- suburb autocomplete ------------------------------------------------
+     A native <datalist> opens a full-screen picker on mobile listing all
+     1,305 suburbs, which is worse than useless. This is an inline list of
+     at most 6 guesses that narrows as they type, and each row shows the
+     zone and the price — so they see the cost before they even choose.
+
+     Matching ranks prefix hits above mid-word hits, so "cab" puts
+     Cabramatta first rather than burying it under Lilli Pilli. Postcodes
+     work too, for anyone who knows theirs but not which suburb it maps to.
+     --------------------------------------------------------------------- */
+  const MAX_HITS = 6;
+  const box  = $('#suburbIn');
+  const list = $('#suburbList');
+  let hits = [], cursor = -1;
+
+  /* The zone list moved from suburbs.js into config.js. Read it from either,
+     so a half-finished upload still prices correctly instead of quietly
+     calling every suburb out of area. */
+  const ZONE_LIST = (L && L.zones) || (typeof ZONES !== 'undefined' ? ZONES : null);
+
+  /* A suburb row is [name, postcode, zoneIndex]. The old distance-era file
+     was [name, postcode, lat, lng] — and Sydney latitudes are negative, so
+     every row would read as "out of area" with nothing visibly broken.
+     Catch that here and say so, rather than quoting silence. */
+  const BAD_DATA = !ZONE_LIST || !ZONE_LIST.length
+    || (SUBURBS[0] && SUBURBS[0].length > 3);
+  if (BAD_DATA) {
+    console.error('[CleanedByRell] suburbs.js and config.js are out of step — ' +
+      'upload config.js, suburbs.js and app.js together.');
+  }
+
+  const zoneOf = s => (!BAD_DATA && s[2] >= 0 ? ZONE_LIST[s[2]] : null);
+
+  function search(q) {
+    q = q.trim().toLowerCase();
+    if (q.length < 2) return [];
+    const pre = [], mid = [];
+    for (const s of SUBURBS) {
+      const name = s[0].toLowerCase();
+      if (name.startsWith(q))      pre.push(s);
+      else if (name.includes(q))   mid.push(s);
+      else if (s[1].startsWith(q)) mid.push(s);   // postcode
+      if (pre.length >= MAX_HITS) break;
+    }
+    return pre.concat(mid).slice(0, MAX_HITS);
+  }
+
+  function drawList() {
+    if (!hits.length) { closeList(); return; }
+    list.innerHTML = hits.map((s, i) => {
+      const z = zoneOf(s);
+      return `<li class="ac-item" role="option" id="ac-${i}" data-i="${i}"
+                  aria-selected="${i === cursor}">
+        <span class="ac-name">${esc(s[0])}<span class="ac-pc">${esc(s[1])}</span></span>
+        <span class="ac-fee">${z ? money(z[1]) : 'Out of area'}</span>
+      </li>`;
+    }).join('');
+    list.hidden = false;
+    box.setAttribute('aria-expanded', 'true');
+  }
+
+  function closeList() {
+    list.hidden = true;
+    list.innerHTML = '';
+    cursor = -1;
+    box.setAttribute('aria-expanded', 'false');
+    box.removeAttribute('aria-activedescendant');
+  }
+
+  function moveCursor(d) {
+    if (list.hidden || !hits.length) return;
+    cursor = (cursor + d + hits.length) % hits.length;
+    [...list.children].forEach((li, i) =>
+      li.setAttribute('aria-selected', String(i === cursor)));
+    box.setAttribute('aria-activedescendant', `ac-${cursor}`);
+    list.children[cursor].scrollIntoView({ block: 'nearest' });
+  }
+
+  function choose(s) {
+    box.value = s[0];              // just the suburb — no "NSW 2166" clutter
+    closeList();
+    apply(s);
+    box.blur();                    // drops the mobile keyboard so they see the price
+  }
+
+  /* ---- what the chosen suburb costs --------------------------------------
      Their suburb decides the region; the region decides the price. No
      distance maths — these are the numbers you actually charge. */
-  const labelFor = s => `${s[0]} NSW ${s[1]}`;
-  const suburbIndex = new Map(SUBURBS.map(s => [labelFor(s).toLowerCase(), s]));
-  $('#suburbList').innerHTML = SUBURBS.map(s => `<option value="${esc(labelFor(s))}">`).join('');
-
-  function setSuburb(raw) {
-    const s = suburbIndex.get((raw || '').trim().toLowerCase());
-    const box = $('#suburbIn'), out = $('#distOut');
-
+  function apply(s) {
+    const out = $('#distOut');
     if (!s) {
       travel = null;
       box.classList.remove('addr--ok');
-      const typed = (raw || '').trim().length > 2;
+      const typed = box.value.trim().length > 2;
       out.hidden = !typed;
       if (typed) out.innerHTML =
-        `<span>Can't find that one. Check the spelling — or if you're outside NSW, posting is the way to go.</span>`;
+        `<span>No match yet — keep typing, or if you're outside NSW, posting is the way to go.</span>`;
     } else {
-      const zi = s[2];
-      const zone = zi >= 0 ? L.zones[zi] : null;
+      const zone = zoneOf(s);
       travel = { name: s[0], postcode: s[1],
                  zone: zone ? zone[0] : null,
                  fee:  zone ? zone[1] : 0,
                  tooFar: !zone };
       box.classList.add('addr--ok');
       out.hidden = false;
-      out.innerHTML = travel.tooFar
+      out.innerHTML = BAD_DATA
+        ? `<span>Pickup pricing isn't loading right now — message me and I'll quote it.</span>`
+        : travel.tooFar
         ? `<span>${esc(s[0])} is outside the areas I drive to.</span><b>Drop off or post</b>`
         : `<span>${esc(s[0])} sits in my ${esc(zone[0])} zone</span><b>${money(zone[1])} both ways</b>`;
     }
     render();
   }
 
-  $('#suburbIn').addEventListener('input', e => setSuburb(e.target.value));
+  box.addEventListener('input', () => {
+    hits = search(box.value);
+    cursor = -1;
+    drawList();
+    // an exact name match prices it without waiting for a tap
+    const exact = hits.find(s => s[0].toLowerCase() === box.value.trim().toLowerCase());
+    apply(exact || null);
+  });
+
+  box.addEventListener('keydown', e => {
+    if (e.key === 'ArrowDown') { moveCursor(1);  e.preventDefault(); }
+    else if (e.key === 'ArrowUp') { moveCursor(-1); e.preventDefault(); }
+    else if (e.key === 'Enter') {
+      if (!list.hidden && hits.length) { choose(hits[cursor >= 0 ? cursor : 0]); e.preventDefault(); }
+    }
+    else if (e.key === 'Escape') closeList();
+  });
+
+  // pointerdown, not click — it fires before the input blurs
+  list.addEventListener('pointerdown', e => {
+    const li = e.target.closest('.ac-item');
+    if (!li) return;
+    e.preventDefault();
+    choose(hits[+li.dataset.i]);
+  });
+
+  box.addEventListener('focus', () => { if (hits.length) drawList(); });
+  document.addEventListener('pointerdown', e => {
+    if (!e.target.closest('#suburbAc')) closeList();
+  });
   $('#mailOpts').innerHTML = radio('mail', L.mail.options, L.mail.options[0].id,
     o => o.price ? `+${money(o.price)}` : 'Free');
   $('#mailNote').textContent = `${L.mail.note} Delivering to ${L.mail.states}.`;

@@ -10,11 +10,11 @@ const CONFIG = {
 
   /* ---- LANDING PAGE COPY ---------------------------------------------- */
   hero: {
-    locationLabel: 'Located in',
+    locationLabel: 'South West Sydney',
     location:      'Chester Hill / Fairfield',
     experience:    'Since 2022',
-    headline:      "South West Sydney's",
-    accent:        'Premium Sneaker Cleaner',
+    headline:      'The expert in',
+    accent:        'Sneaker care',
     sub:           'Hand cleaned with precision, patience and no compromise.'
   },
 
@@ -32,8 +32,6 @@ const CONFIG = {
       title: 'Organic views on TikTok and Instagram',
       desc:  "Plenty of good cleaners in Sydney. I'm just glad this many people watch mine." }
   ],
-
-  serviceAreas: ['Fairfield','Cabramatta','Chester Hill','Bankstown','Liverpool','Pickup & return'],
 
   /* ---- THE CLEAN -------------------------------------------------------- */
   packagesIntro: {
@@ -118,6 +116,49 @@ const CONFIG = {
       // soon:true renders it greyed out and unselectable
       { id:'mail',  name:'Interstate Postage',
         desc:'Prepaid Shipping Label provided', soon:true }
+    ],
+
+    /* The regions you drive to, and what each costs. One fee covers
+       collection AND return. Editing a price here changes it everywhere —
+       the quote, the deposit, and the list at the foot of the home page.
+       Which suburb sits in which zone is in suburbs.js. */
+    zones: [
+      ['Fairfield / Cabramatta', 35],
+      ['Blacktown', 40],
+      ['Burwood / Strathfield', 40],
+      ['Canterbury-Bankstown', 40],
+      ['Cumberland', 40],
+      ['Georges River', 40],
+      ['Parramatta', 40],
+      ['Canada Bay', 45],
+      ['Liverpool', 45],
+      ['Campbelltown', 50],
+      ['Inner West', 50],
+      ['Penrith', 60],
+      ['Oran Park', 70],
+      ['Hunters Hill', 70],
+      ['Ryde', 70],
+      ['Rockdale', 70],
+      ['The Hills Shire', 70],
+      ['Lane Cove', 70],
+      ['Sydney CBD', 70],
+      ['Botany Bay', 90],
+      ['Willoughby', 90],
+      ['North Sydney', 90],
+      ['Hornsby', 90],
+      ['Ku-ring-gai', 90],
+      ['Mosman', 90],
+      ['Woollahra', 90],
+      ['Randwick', 90],
+      ['Sutherland Shire', 90],
+      ['Waverley', 90],
+      ['Camden', 70],
+      ['Northern Beaches', 90],
+      ['Hawkesbury', 90],
+      ['Wollongong', 90],
+      ['Wollondilly', 90],
+      ['Blue Mountains', 90],
+      ['Central Coast', 90]
     ],
 
     /* Pickup & return is priced by region, not by distance — these come

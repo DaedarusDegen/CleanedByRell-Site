@@ -1,5 +1,20 @@
+# macOS Finder metadata — never belongs in a repo
 .DS_Store
 **/.DS_Store
+._*
+Thumbs.db
+
+# keep raw phone exports out; commit optimised WebP only
 Photos/*.PNG
 Photos/*.JPG
+Photos/*.JPEG
+Photos/*.png
+Photos/*.jpg
 Photos/*.jpeg
+
+# chat-preview builds and scratch files never deploy
+preview/
+preview-*.html
+UPLOAD-README.txt
+*.zip
+node_modules/

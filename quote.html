@@ -92,9 +92,15 @@
 
           <div id="localPanel" hidden>
             <p class="pair-sub">Your suburb</p>
-            <input class="addr" id="suburbIn" list="suburbList" autocomplete="off"
-                   placeholder="Start typing your suburb" aria-describedby="distOut">
-            <datalist id="suburbList"></datalist>
+            <div class="ac" id="suburbAc">
+              <input class="addr" id="suburbIn" type="text" autocomplete="off"
+                     autocapitalize="words" autocorrect="off" spellcheck="false"
+                     role="combobox" aria-expanded="false" aria-autocomplete="list"
+                     aria-controls="suburbList" aria-describedby="distOut"
+                     placeholder="Start typing your suburb">
+              <ul class="ac-list" id="suburbList" role="listbox"
+                  aria-label="Matching suburbs" hidden></ul>
+            </div>
             <p class="dist" id="distOut" hidden></p>
 
           </div>
